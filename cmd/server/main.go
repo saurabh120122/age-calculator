@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	"age-calculator/config"
 	"age-calculator/internal/logger"
@@ -24,6 +25,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// wait for MySQL to be ready
+	for i := 1; i <= 10; i++ {
+		if err := db.Ping(); err == nil {
+			break
+		}
+		log.Printf("waiting for database... (%d/10)", i)
+		time.Sleep(2 * time.Second)
+	}
+
 	if err := db.Ping(); err != nil {
 		log.Fatal("database connection failed:", err)
 	}
@@ -33,7 +43,7 @@ func main() {
 
 	app := fiber.New()
 
-	// global middleware (order matters)
+	// global middleware
 	app.Use(logger.RequestID())
 	app.Use(logger.RequestLogger(logg))
 
