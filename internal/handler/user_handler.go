@@ -35,9 +35,7 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 	req.DOB.ToTime(),
     )
     if err != nil {
-	return c.Status(500).JSON(fiber.Map{
-		"error": err.Error(),
-	})
+	return c.SendStatus(fiber.StatusInternalServerError)
 }
 
 
